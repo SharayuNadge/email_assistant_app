@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Email Assistant</title>
+</head>
+<body>
+    <h1>AI Email Drafting Assistant</h1>
+    
+    <label>Describe the email you need:</label><br>
+    <textarea id="user_input" rows="4" cols="50"></textarea><br><br>
+    
+    <label>Select tone:</label><br>
+    <select id="tone">
+        <option value="formal">Formal</option>
+        <option value="casual">Casual</option>
+        <option value="persuasive">Persuasive</option>
+    </select><br><br>
+    
+    <button onclick="generateEmail()">Generate Email</button>
+    
+    <br><br>
+    <h2>Generated Email:</h2>
+    <div id="subject"></div>
+    <div id="body"></div>
+    <div id="tone_output"></div>
+
+    <script>
+        async function generateEmail() {
+            const user_input = document.getElementById("user_input").value;
+            const tone = document.getElementById("tone").value;
+            
+            document.getElementById("subject").innerText = "Generating...";
+            
+            const response = await fetch("/generate", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({user_input, tone})
+            });
+            
+            const data = await response.json();
+            
+            document.getElementById("subject").innerText = "Subject: " + data.subject;
+            document.getElementById("body").innerText = "Body: " + data.body;
+            document.getElementById("tone_output").innerText = "Tone: " + data.tone;
+        }
+    </script>
+</body>
+</html>
