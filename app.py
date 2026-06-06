@@ -32,7 +32,8 @@ def generate():
             - subject: the email subject line
             - body: the full email body. Use \\n for new lines between paragraphs and after greetings and sign offs.
             - tone: the tone specified by the user - formal, casual or persuasive
-            Always follow the tone specified by the user strictly."""},
+            Always follow the tone specified by the user strictly.
+            If the email requires specific details the user hasn't provided (date, time, location, project name etc.), include clear placeholders like [Date], [Time], [Location]."""},
         {"role": "user", "content": f"{user_input}. Use a {tone} tone. Address the recipient as '{recipient_name}' in the salutation. Sign off with the sender's name '{user_name}' and their role '{user_role}'."}
     ]
 
