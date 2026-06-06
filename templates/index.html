@@ -1,47 +1,275 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Email Assistant</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Email Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            width: 100%;
+            max-width: 700px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #1a202c;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #718096;
+            margin-bottom: 32px;
+            font-size: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 15px;
+            resize: vertical;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        textarea:focus {
+            border-color: #667eea;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            margin-bottom: 24px;
+            background: white;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .generate-btn:hover {
+            opacity: 0.9;
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            margin-top: 24px;
+            font-weight: 600;
+        }
+
+        .result {
+            display: none;
+            margin-top: 32px;
+            border-top: 2px solid #e2e8f0;
+            padding-top: 24px;
+        }
+
+        .subject-box {
+            background: #ebf4ff;
+            border-left: 4px solid #667eea;
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .body-box {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            white-space: pre-wrap;
+            color: #2d3748;
+            line-height: 1.7;
+            margin-bottom: 16px;
+            width: 100%;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 15px;
+            resize: vertical;
+            outline: none;
+        }
+
+        .tone-badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .copy-btn {
+            width: 100%;
+            padding: 12px;
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .error-box {
+            display: none;
+            background: #fff5f5;
+            border-left: 4px solid #fc8181;
+            padding: 12px 16px;
+            border-radius: 4px;
+            color: #c53030;
+            margin-top: 24px;
+        }
+    </style>
 </head>
 <body>
-    <h1>AI Email Drafting Assistant</h1>
-    
-    <label>Describe the email you need:</label><br>
-    <textarea id="user_input" rows="4" cols="50"></textarea><br><br>
-    
-    <label>Select tone:</label><br>
-    <select id="tone">
-        <option value="formal">Formal</option>
-        <option value="casual">Casual</option>
-        <option value="persuasive">Persuasive</option>
-    </select><br><br>
-    
-    <button onclick="generateEmail()">Generate Email</button>
-    
-    <br><br>
-    <h2>Generated Email:</h2>
-    <div id="subject"></div>
-    <div id="body"></div>
-    <div id="tone_output"></div>
+    <div class="container">
+        <h1>✉️ AI Email Assistant</h1>
+        <p class="subtitle">Describe your email and let AI draft it for you instantly.</p>
+
+        <label>What email do you need?</label>
+        <textarea id="user_input" rows="4" placeholder="e.g. Ask my manager for a day off next Friday for a personal appointment..."></textarea>
+        <br><br>
+
+        <label>Select tone:</label>
+        <select id="tone">
+            <option value="formal">Formal</option>
+            <option value="casual">Casual</option>
+            <option value="persuasive">Persuasive</option>
+        </select>
+
+        <button class="generate-btn" onclick="generateEmail()">Generate Email ✨</button>
+
+        <div class="loading" id="loading">⏳ AI is drafting your email...</div>
+        <div class="error-box" id="error_box"></div>
+
+        <div class="result" id="result">
+            <div class="subject-box" id="subject"></div>
+            <div class="tone-badge" id="tone_output"></div>
+            <label style="color: #718096; font-size: 13px; font-weight: 400; margin-bottom: 4px;">✏️ Edit your email below before copying</label>
+            <textarea class="body-box" id="body" rows="12"></textarea>
+            <button class="copy-btn" onclick="copyEmail()">📋 Copy Email</button>
+            <button class="copy-btn" onclick="resetForm()" style="margin-top: 10px; border-color: #e2e8f0; color: #718096;">🔄 Draft Another Email</button>
+        </div>
+    </div>
 
     <script>
         async function generateEmail() {
             const user_input = document.getElementById("user_input").value;
             const tone = document.getElementById("tone").value;
-            
-            document.getElementById("subject").innerText = "Generating...";
-            
-            const response = await fetch("/generate", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({user_input, tone})
-            });
-            
-            const data = await response.json();
-            
-            document.getElementById("subject").innerText = "Subject: " + data.subject;
-            document.getElementById("body").innerText = "Body: " + data.body;
-            document.getElementById("tone_output").innerText = "Tone: " + data.tone;
+
+            if (!user_input.trim()) {
+                showError("Please describe the email you need.");
+                return;
+            }
+
+            // Show loading, hide previous results
+            document.getElementById("loading").style.display = "block";
+            document.getElementById("result").style.display = "none";
+            document.getElementById("error_box").style.display = "none";
+            document.querySelector(".generate-btn").disabled = true;
+
+            try {
+                const response = await fetch("/generate", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({user_input, tone})
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    showError(data.error);
+                    return;
+                }
+
+                document.getElementById("subject").innerText = "Subject: " + data.subject;
+                document.getElementById("body").value = data.body.replace(/\\n/g, '\n');
+                document.getElementById("tone_output").innerText = tone.toUpperCase();
+                document.getElementById("result").style.display = "block";
+
+            } catch (error) {
+                showError("Something went wrong. Please try again.");
+            } finally {
+                document.getElementById("loading").style.display = "none";
+                document.querySelector(".generate-btn").disabled = false;
+            }
+        }
+
+        function copyEmail() {
+            const subject = document.getElementById("subject").innerText;
+            const body = document.getElementById("body").value;
+            navigator.clipboard.writeText(subject + "\n\n" + body);
+            document.querySelector(".copy-btn").innerText = "✅ Copied!";
+            setTimeout(() => {
+                document.querySelector(".copy-btn").innerText = "📋 Copy Email";
+            }, 2000);
+        }
+
+        function showError(message) {
+            const errorBox = document.getElementById("error_box");
+            errorBox.innerText = message;
+            errorBox.style.display = "block";
+        }
+        function resetForm() {
+            document.getElementById("user_input").value = "";
+            document.getElementById("result").style.display = "none";
+            document.getElementById("error_box").style.display = "none";
+            document.getElementById("tone").value = "formal";
         }
     </script>
 </body>

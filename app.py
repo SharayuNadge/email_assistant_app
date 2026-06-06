@@ -21,12 +21,12 @@ def generate():
 
     messages = [
         {"role": "system", "content": """You are a professional email writing assistant.
-Always respond with a JSON object only - no extra text, no markdown, no code blocks.
-The JSON must have exactly these three fields:
-- subject: the email subject line
-- body: the full email body
-- tone: the tone specified by the user - formal, casual or persuasive
-Always follow the tone specified by the user strictly."""},
+            Always respond with a JSON object only - no extra text, no markdown, no code blocks.
+            The JSON must have exactly these three fields:
+            - subject: the email subject line
+            - body: the full email body. Use \\n for new lines between paragraphs and after greetings and sign offs.
+            - tone: the tone specified by the user - formal, casual or persuasive
+            Always follow the tone specified by the user strictly."""},
         {"role": "user", "content": f"{user_input}. Use a {tone} tone."}
     ]
 
@@ -38,9 +38,14 @@ Always follow the tone specified by the user strictly."""},
         )
 
         raw = response.choices[0].message.content
-        raw = raw.strip().removeprefix("```json").removesuffix("```").strip()
+        raw = raw.strip()
+        if raw.startswith("```json"):
+            raw = raw[7:]
+        if raw.endswith("```"):
+            raw = raw[:-3]
+        raw = raw.strip()
         email_data = json.loads(raw)
-
+        email_data["body"] = email_data["body"].replace("\\n", "\n")
         return jsonify(email_data)
 
     except APIConnectionError:
