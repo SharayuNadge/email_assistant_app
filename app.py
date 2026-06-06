@@ -21,6 +21,9 @@ def generate():
     data = request.get_json()
     user_input = data["user_input"]
     tone = data["tone"]
+    user_name = data.get("user_name", "")
+    user_role = data.get("user_role", "")
+    recipient_name = data.get("recipient_name", "")
 
     messages = [
         {"role": "system", "content": """You are a professional email writing assistant.
@@ -30,7 +33,7 @@ def generate():
             - body: the full email body. Use \\n for new lines between paragraphs and after greetings and sign offs.
             - tone: the tone specified by the user - formal, casual or persuasive
             Always follow the tone specified by the user strictly."""},
-        {"role": "user", "content": f"{user_input}. Use a {tone} tone."}
+        {"role": "user", "content": f"{user_input}. Use a {tone} tone. Address the recipient as '{recipient_name}' in the salutation. Sign off with the sender's name '{user_name}' and their role '{user_role}'."}
     ]
 
     try:

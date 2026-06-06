@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Email Assistant</title>
+    <title>Smart Email Drafter</title>
     <style>
         * {
             margin: 0;
@@ -178,9 +178,22 @@
 </head>
 <body>
     <div class="container">
-        <h1>✉️ AI Email Assistant</h1>
+        <h1>✉️ Smart Email Drafter</h1>
         <p class="subtitle">Describe your email and let AI draft it for you instantly.</p>
 
+        <div style="background: #f7fafc; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
+            <label>Your Name:</label>
+            <input type="text" id="user_name" placeholder="e.g. Sharayu" oninput="saveUserSettings()" style="width:100%; padding:10px; border:2px solid #e2e8f0; border-radius:8px; margin-bottom:12px; font-size:15px; outline:none;">
+            
+            <label>Your Role/Title:</label>
+            <input type="text" id="user_role" placeholder="e.g. Project Manager" oninput="saveUserSettings()" style="width:100%; padding:10px; border:2px solid #e2e8f0; border-radius:8px; font-size:15px; outline:none;">
+            
+            <p style="color:#718096; font-size:13px; margin-top:8px;">✅ Your details are saved in your browser automatically.</p>
+        </div>
+
+        <label>Recipient Name:</label>
+        <input type="text" id="recipient_name" placeholder="e.g. John" style="width:100%; padding:10px; border:2px solid #e2e8f0; border-radius:8px; margin-bottom:16px; font-size:15px; outline:none;">
+        <br><br>
         <label>What email do you need?</label>
         <textarea id="user_input" rows="4" placeholder="e.g. Ask my manager for a day off next Friday for a personal appointment..."></textarea>
         <br><br>
@@ -208,9 +221,29 @@
     </div>
 
     <script>
+        // Load saved user details from browser
+        function loadUserSettings() {
+            const savedName = localStorage.getItem("user_name");
+            const savedRole = localStorage.getItem("user_role");
+            if (savedName) document.getElementById("user_name").value = savedName;
+            if (savedRole) document.getElementById("user_role").value = savedRole;
+        }
+
+        // Save user details to browser
+        function saveUserSettings() {
+            localStorage.setItem("user_name", document.getElementById("user_name").value);
+            localStorage.setItem("user_role", document.getElementById("user_role").value);
+        }
+
+        // Load settings when page opens
+        window.onload = loadUserSettings;
+
         async function generateEmail() {
             const user_input = document.getElementById("user_input").value;
             const tone = document.getElementById("tone").value;
+            const user_name = document.getElementById("user_name").value;
+            const user_role = document.getElementById("user_role").value;
+            const recipient_name = document.getElementById("recipient_name").value;
 
             if (!user_input.trim()) {
                 showError("Please describe the email you need.");
@@ -227,7 +260,7 @@
                 const response = await fetch("/generate", {
                     method: "POST",
                     headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({user_input, tone})
+                    body: JSON.stringify({user_input, tone, user_name, user_role, recipient_name})
                 });
 
                 const data = await response.json();
