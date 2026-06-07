@@ -215,7 +215,9 @@
             <div class="tone-badge" id="tone_output"></div>
             <label style="color: #718096; font-size: 13px; font-weight: 400; margin-bottom: 4px;">✏️ Edit your email below before copying</label>
             <textarea class="body-box" id="body" rows="12"></textarea>
-            <button class="copy-btn" onclick="copyEmail()">📋 Copy Email</button>
+            <button class="copy-btn" onclick="copySubject()">📋 Copy Subject</button>
+            <button class="copy-btn" onclick="copyBody()" style="margin-top: 10px;">📋 Copy Email Body</button>
+            <button class="copy-btn" onclick="openInOutlook()" style="margin-top: 10px; background: #0078d4; color: white; border-color: #0078d4;">📧 Open in Outlook</button>
             <button class="copy-btn" onclick="resetForm()" style="margin-top: 10px; border-color: #e2e8f0; color: #718096;">🔄 Draft Another Email</button>
         </div>
     </div>
@@ -283,14 +285,27 @@
             }
         }
 
-        function copyEmail() {
-            const subject = document.getElementById("subject").innerText;
+        function copySubject() {
+            const subject = document.getElementById("subject").innerText.replace("Subject: ", "");
+            navigator.clipboard.writeText(subject);
+            const btn = document.querySelectorAll(".copy-btn")[0];
+            btn.innerText = "✅ Subject Copied!";
+            setTimeout(() => { btn.innerText = "📋 Copy Subject"; }, 2000);
+        }
+
+        function copyBody() {
             const body = document.getElementById("body").value;
-            navigator.clipboard.writeText(subject + "\n\n" + body);
-            document.querySelector(".copy-btn").innerText = "✅ Copied!";
-            setTimeout(() => {
-                document.querySelector(".copy-btn").innerText = "📋 Copy Email";
-            }, 2000);
+            navigator.clipboard.writeText(body);
+            const btn = document.querySelectorAll(".copy-btn")[1];
+            btn.innerText = "✅ Body Copied!";
+            setTimeout(() => { btn.innerText = "📋 Copy Email Body"; }, 2000);
+        }
+
+        function openInOutlook() {
+            const subject = document.getElementById("subject").innerText.replace("Subject: ", "");
+            const body = document.getElementById("body").value;
+            const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.location.href = mailtoLink;
         }
 
         function showError(message) {
@@ -303,6 +318,12 @@
             document.getElementById("result").style.display = "none";
             document.getElementById("error_box").style.display = "none";
             document.getElementById("tone").value = "formal";
+            
+            // Reset all copy buttons
+            const buttons = document.querySelectorAll(".copy-btn");
+            buttons[0].innerText = "📋 Copy Subject";
+            buttons[1].innerText = "📋 Copy Email Body";
+            buttons[2].innerText = "📧 Open in Outlook";
         }
     </script>
 </body>
