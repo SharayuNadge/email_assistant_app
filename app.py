@@ -36,7 +36,7 @@ def generate():
             If the email requires specific details the user hasn't provided (date, time, location, project name etc.), include clear placeholders like [Date], [Time], [Location].
             Always write the email in professional English regardless of the language the user types in.
          """},
-        {"role": "user", "content": f"{user_input}. Use a {tone} tone. Address the recipient as '{recipient_name}' in the salutation. Sign off with the sender's name '{user_name}' and their role '{user_role}'."}
+        {"role": "user", "content": f"{user_input}. Use a {tone} tone. Address the recipient as '{recipient_name if recipient_name else '[Recipient Name]'}' in the salutation. Sign off with the sender's name '{'[Your Name]' if not user_name else user_name}' and their role '{'[Your Role]' if not user_role else user_role}'."}
     ]
 
     try:
