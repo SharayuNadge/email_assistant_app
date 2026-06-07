@@ -3,6 +3,7 @@
 An AI powered email drafting web application built with Flask and LM Studio.
 
 ## Features
+- Welcome popup explaining the app on first load
 - Accepts input in any language or broken English
 - Always generates professional English emails
 - Personalised salutations using recipient's name
