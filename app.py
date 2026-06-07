@@ -34,7 +34,7 @@ def generate():
             - tone: the tone specified by the user - formal, casual or persuasive
             Always follow the tone specified by the user strictly.
             If the email requires specific details the user hasn't provided (date, time, location, project name etc.), include clear placeholders like [Date], [Time], [Location].
-            Always write the email in professional English regardless of the language the user types in.
+            IMPORTANT: Always write the email in professional English ONLY, regardless of what language the user types in. Never respond in any other language.
          """},
         {"role": "user", "content": f"{user_input}. Use a {tone} tone. Address the recipient as '{recipient_name if recipient_name else '[Recipient Name]'}' in the salutation. Sign off with the sender's name '{'[Your Name]' if not user_name else user_name}' and their role '{'[Your Role]' if not user_role else user_role}'."}
     ]
